@@ -6,10 +6,13 @@ import (
 	"github.com/go-redis/redis/v9"
 )
 
+// Store type manages the client/redis functions.
 type Store struct {
 	Conn *redis.Client
 }
 
+// Put
+// adds a new pair to redis.
 func (s *Store) Put(key, value string) error {
 	ctx := context.Background()
 
@@ -20,6 +23,8 @@ func (s *Store) Put(key, value string) error {
 	return nil
 }
 
+// Trash
+// removes a pair from redis.
 func (s *Store) Trash(key string) error {
 	ctx := context.Background()
 
@@ -30,6 +35,8 @@ func (s *Store) Trash(key string) error {
 	return nil
 }
 
+// Pull
+// gets a pair from redis.
 func (s *Store) Pull(key string) (string, error) {
 	ctx := context.Background()
 
