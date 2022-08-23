@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/amirhnajafiz/distributed-redis/internal/http/request"
 	"github.com/amirhnajafiz/distributed-redis/internal/http/response"
 	"github.com/amirhnajafiz/distributed-redis/internal/store"
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,21 @@ type Handler struct {
 }
 
 func (h *Handler) Insert(c *gin.Context) {
+	var pair request.NewPairRequest
 
+	if err := c.BindJSON(&pair); err != nil {
+		_ = c.Error(err)
+
+		return
+	}
+
+	if err := h.Store.Put(pair.Key, pair.Value); err != nil {
+		_ = c.Error(err)
+
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
 
 func (h *Handler) Delete(c *gin.Context) {
