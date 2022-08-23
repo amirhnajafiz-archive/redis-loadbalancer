@@ -18,7 +18,14 @@ func (h *Handler) Insert(c *gin.Context) {
 }
 
 func (h *Handler) Delete(c *gin.Context) {
+	err := h.Store.Trash(c.Param("key"))
+	if err != nil {
+		_ = c.Error(err)
 
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
 
 func (h *Handler) Get(c *gin.Context) {
