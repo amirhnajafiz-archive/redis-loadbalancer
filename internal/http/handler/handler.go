@@ -14,7 +14,7 @@ type Handler struct {
 	Store store.Store
 }
 
-func (h *Handler) Insert(c *gin.Context) {
+func (h *Handler) insert(c *gin.Context) {
 	var pair request.NewPairRequest
 
 	if err := c.BindJSON(&pair); err != nil {
@@ -32,7 +32,7 @@ func (h *Handler) Insert(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-func (h *Handler) Delete(c *gin.Context) {
+func (h *Handler) delete(c *gin.Context) {
 	err := h.Store.Trash(c.Param("key"))
 	if err != nil {
 		_ = c.Error(err)
@@ -43,7 +43,7 @@ func (h *Handler) Delete(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-func (h *Handler) Get(c *gin.Context) {
+func (h *Handler) get(c *gin.Context) {
 	value, err := h.Store.Pull(c.Param("key"))
 	if err != nil {
 		_ = c.Error(err)
@@ -59,7 +59,7 @@ func (h *Handler) Get(c *gin.Context) {
 }
 
 func (h *Handler) Register(r *gin.RouterGroup) {
-	r.POST("/data", h.Insert)
-	r.DELETE("/data/{key}", h.Delete)
-	r.GET("/data/{key}", h.Get)
+	r.POST("/data", h.insert)
+	r.DELETE("/data/{key}", h.delete)
+	r.GET("/data/{key}", h.get)
 }
