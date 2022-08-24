@@ -4,7 +4,11 @@ services:
   redis:
     image: 'bitnami/redis:latest'
     environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_PORT_NUMBER=6379
       - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379'
     networks:
       - app-network
 
