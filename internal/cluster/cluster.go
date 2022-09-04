@@ -1,28 +1,31 @@
 package cluster
 
 import (
-	"github.com/amirhnajafiz/distributed-redis/internal/cmd/server"
 	"strconv"
+
+	"github.com/amirhnajafiz/distributed-redis/internal/cmd/server"
 )
 
 type Cluster struct {
 	capacity int
 	port     int
 
-	status map[int]string
+	nodes map[string]int
 }
 
 func New(capacity int) Cluster {
 	return Cluster{
 		capacity: capacity,
 		port:     11723,
-		status:   make(map[int]string),
+		nodes:    make(map[string]int),
 	}
 }
 
-func (c *Cluster) Run() {
+func (c *Cluster) CreateNodes() {
 	for i := 0; i < c.capacity; i++ {
 		address := ":" + strconv.Itoa(c.port)
+
+		c.nodes["localhost"+address] = 0
 
 		c.port++
 
