@@ -1,6 +1,7 @@
 package cluster
 
 import (
+	"log"
 	"net/http"
 	"sort"
 	"strconv"
@@ -37,7 +38,7 @@ func (c *Cluster) create() {
 	}
 }
 
-func (c *Cluster) getIP(ctx *gin.Context) {
+func (c *Cluster) getIP() string {
 	n := c.nodes[0]
 
 	n.Used++
@@ -46,13 +47,40 @@ func (c *Cluster) getIP(ctx *gin.Context) {
 		return c.nodes[i].Used < c.nodes[j].Used
 	})
 
-	ctx.String(http.StatusOK, n.IP)
+	return n.IP
+}
+
+func (c *Cluster) handle(ctx *gin.Context) {
+	req := ctx.Request
+	address := c.getIP() + req.URL.Path
+
+	log.Printf("url: %s\n", address)
+
+	if req.Method == http.MethodGet {
+		resp, err := http.Get(address)
+		if err != nil {
+			_ = ctx.Error(err)
+
+			return
+		}
+
+		ctx.JSON(resp.StatusCode, resp.Body)
+	} else {
+		resp, err := http.Post(address, req.Header.Get("content-type"), req.Body)
+		if err != nil {
+			_ = ctx.Error(err)
+
+			return
+		}
+
+		ctx.JSON(resp.StatusCode, resp.Body)
+	}
 }
 
 func (c *Cluster) Register() {
 	app := gin.Default()
 
-	app.GET("/", c.getIP)
+	app.Any("/", c.handle)
 
 	c.create()
 
