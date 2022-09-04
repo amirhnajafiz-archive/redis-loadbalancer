@@ -52,7 +52,7 @@ func (c *Cluster) getIP() string {
 
 func (c *Cluster) handle(ctx *gin.Context) {
 	req := ctx.Request
-	address := c.getIP() + req.URL.Path
+	address := "http://" + c.getIP() + req.URL.Path
 
 	log.Printf("url: %s\n", address)
 
@@ -75,12 +75,14 @@ func (c *Cluster) handle(ctx *gin.Context) {
 
 		ctx.JSON(resp.StatusCode, resp.Body)
 	}
+
+	ctx.Status(http.StatusNoContent)
 }
 
 func (c *Cluster) Register() {
 	app := gin.Default()
 
-	app.Any("/", c.handle)
+	app.Use(c.handle)
 
 	c.create()
 
