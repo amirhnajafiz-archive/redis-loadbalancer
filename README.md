@@ -17,3 +17,9 @@ curl lcoalhost:8080/
 ```
 
 Each time you request for a cluster, you will get a new IP.
+
+## Test
+You can set a redis cluster with docker compose:
+```shell
+docker-compose up -d
+```
