@@ -16,7 +16,7 @@ type Node struct {
 
 type Cluster struct {
 	Capacity int
-	Nodes    []*Node
+	nodes    []*Node
 }
 
 func (c *Cluster) create() {
@@ -31,24 +31,32 @@ func (c *Cluster) create() {
 
 		port++
 
-		c.Nodes = append(c.Nodes, &n)
+		c.nodes = append(c.nodes, &n)
 
 		go server.New(address)
 	}
 }
 
 func (c *Cluster) getIP(ctx *gin.Context) {
-	n := c.Nodes[0]
+	n := c.nodes[0]
 
 	n.Used++
 
-	sort.Slice(c.Nodes, func(i, j int) bool {
-		return c.Nodes[i].Used < c.Nodes[j].Used
+	sort.Slice(c.nodes, func(i, j int) bool {
+		return c.nodes[i].Used < c.nodes[j].Used
 	})
 
 	ctx.String(http.StatusOK, n.IP)
 }
 
 func (c *Cluster) Register() {
+	app := gin.Default()
 
+	app.GET("/", c.getIP)
+
+	c.create()
+
+	if err := app.Run(":8080"); err != nil {
+		panic(err)
+	}
 }
