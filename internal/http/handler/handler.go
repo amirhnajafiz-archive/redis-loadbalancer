@@ -36,6 +36,8 @@ func (h *Handler) insert(c *gin.Context) {
 }
 
 func (h *Handler) delete(c *gin.Context) {
+	fmt.Println(c.Param("key"))
+
 	err := h.Store.Trash(c.Param("key"))
 	if err != nil {
 		_ = c.Error(err)
