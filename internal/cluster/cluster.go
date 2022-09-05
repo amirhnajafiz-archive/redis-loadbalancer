@@ -9,6 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// LoadBalancingServer
+// is the server type.
+type LoadBalancingServer interface {
+	Health() interface{}
+	Start(string string) error
+}
+
 // node
 // manages to keep information about a service.
 type node struct {
@@ -65,7 +72,7 @@ func (c *cluster) getIP() string {
 
 // New
 // creating a new cluster.
-func New(capacity int) *cluster {
+func New(capacity int) LoadBalancingServer {
 	c := cluster{
 		capacity:   capacity,
 		httpClient: http_client.New(),
@@ -89,4 +96,10 @@ func (c *cluster) Start(addr string) error {
 	}
 
 	return nil
+}
+
+// Health
+// returns status about cluster.
+func (c *cluster) Health() interface{} {
+	return c.capacity
 }
