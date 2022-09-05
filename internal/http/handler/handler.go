@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -28,6 +29,8 @@ func (h *Handler) insert(c *gin.Context) {
 
 		return
 	}
+
+	fmt.Println(pair)
 
 	c.Status(http.StatusNoContent)
 }
@@ -60,6 +63,6 @@ func (h *Handler) get(c *gin.Context) {
 
 func (h *Handler) Register(r *gin.RouterGroup) {
 	r.POST("/data", h.insert)
-	r.DELETE("/data/{key}", h.delete)
-	r.GET("/data/{key}", h.get)
+	r.DELETE("/data/:key", h.delete)
+	r.GET("/data/:key", h.get)
 }

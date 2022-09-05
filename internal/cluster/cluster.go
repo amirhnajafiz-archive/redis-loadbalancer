@@ -1,8 +1,6 @@
 package cluster
 
 import (
-	"log"
-	"net/http"
 	"sort"
 	"strconv"
 
@@ -48,35 +46,6 @@ func (c *Cluster) getIP() string {
 	})
 
 	return n.IP
-}
-
-func (c *Cluster) handle(ctx *gin.Context) {
-	req := ctx.Request
-	address := "http://" + c.getIP() + req.URL.Path
-
-	log.Printf("url: %s\n", address)
-
-	if req.Method == http.MethodGet {
-		resp, err := http.Get(address)
-		if err != nil {
-			_ = ctx.Error(err)
-
-			return
-		}
-
-		ctx.JSON(resp.StatusCode, resp.Body)
-	} else {
-		resp, err := http.Post(address, req.Header.Get("content-type"), req.Body)
-		if err != nil {
-			_ = ctx.Error(err)
-
-			return
-		}
-
-		ctx.JSON(resp.StatusCode, resp.Body)
-	}
-
-	ctx.Status(http.StatusNoContent)
 }
 
 func (c *Cluster) Register() {
