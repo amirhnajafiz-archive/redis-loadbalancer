@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/amirhnajafiz/distributed-redis/internal/cmd/server"
+	"github.com/amirhnajafiz/distributed-redis/pkg/http_client"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,8 +15,10 @@ type Node struct {
 }
 
 type Cluster struct {
-	Capacity int
-	nodes    []*Node
+	Capacity   int
+	HttpClient *http_client.HTTPClient
+
+	nodes []*Node
 }
 
 func (c *Cluster) create() {
