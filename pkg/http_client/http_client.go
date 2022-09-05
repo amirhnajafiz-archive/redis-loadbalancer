@@ -30,11 +30,13 @@ func (h HTTPClient) Get(uri string) (*http.Response, error) {
 	return resp, nil
 }
 
-func (h HTTPClient) Post(uri string, body io.Reader) (*http.Response, error) {
+func (h HTTPClient) Post(uri string, body io.Reader, content string) (*http.Response, error) {
 	req, err := http.NewRequest(http.MethodPost, uri, body)
 	if err != nil {
 		return nil, fmt.Errorf("failed in creating requests: %w", err)
 	}
+
+	req.Header.Add("content-type", content)
 
 	resp, err := h.client.Do(req)
 	if err != nil {

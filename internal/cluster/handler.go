@@ -16,7 +16,7 @@ func (c *Cluster) handle(ctx *gin.Context) {
 	log.Printf("url: %s\n", address)
 
 	if req.Method == http.MethodGet {
-		resp, err := http.Get(address)
+		resp, err := c.HttpClient.Get(address)
 		if err != nil {
 			_ = ctx.Error(err)
 
@@ -29,26 +29,15 @@ func (c *Cluster) handle(ctx *gin.Context) {
 
 		ctx.JSON(resp.StatusCode, responseBody)
 	} else if req.Method == http.MethodPost {
-		resp, err := http.Post(address, req.Header.Get("content-type"), req.Body)
+		_, err := c.HttpClient.Post(address, req.Body, req.Header.Get("content-type"))
 		if err != nil {
 			_ = ctx.Error(err)
 
 			return
 		}
-
-		ctx.JSON(resp.StatusCode, resp.Body)
 	} else if req.Method == http.MethodDelete {
-		// Create client
-		client := &http.Client{}
-
-		newreq, err := http.NewRequest(http.MethodDelete, address, nil)
+		_, err := c.HttpClient.Delete(address)
 		if err != nil {
-			_ = ctx.Error(err)
-
-			return
-		}
-
-		if _, err := client.Do(newreq); err != nil {
 			_ = ctx.Error(err)
 
 			return
