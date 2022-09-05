@@ -9,26 +9,36 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Node struct {
-	IP   string
-	Used int
+// node
+// manages to keep information about a service.
+type node struct {
+	// service ip.
+	ip string
+	// number of times that the service is used.
+	used int
 }
 
-type Cluster struct {
-	Capacity   int
-	HttpClient *http_client.HTTPClient
-
-	nodes []*Node
+// cluster
+// manages to monitor clusters and do the load balancing logic.
+type cluster struct {
+	// Capacity is the maximum number of replicas.
+	capacity int
+	// HttpClient manages the requests in cluster.
+	httpClient *http_client.HTTPClient
+	// the array of nodes.
+	nodes []*node
 }
 
-func (c *Cluster) create() {
+// create
+// manages to create internal services.
+func (c *cluster) create() {
 	port := 12489
 
-	for i := 0; i < c.Capacity; i++ {
+	for i := 0; i < c.capacity; i++ {
 		address := ":" + strconv.Itoa(port)
-		n := Node{
-			IP:   "localhost" + address,
-			Used: 0,
+		n := node{
+			ip:   "localhost" + address,
+			used: 0,
 		}
 
 		port++
@@ -39,27 +49,44 @@ func (c *Cluster) create() {
 	}
 }
 
-func (c *Cluster) getIP() string {
+// getIP
+// returns an ip based of the load balancing logic.
+func (c *cluster) getIP() string {
 	n := c.nodes[0]
 
-	n.Used++
+	n.used++
 
 	sort.Slice(c.nodes, func(i, j int) bool {
-		return c.nodes[i].Used < c.nodes[j].Used
+		return c.nodes[i].used < c.nodes[j].used
 	})
 
-	return n.IP
+	return n.ip
 }
 
-func (c *Cluster) Register() {
+// New
+// creating a new cluster.
+func New(capacity int) *cluster {
+	c := cluster{
+		capacity:   capacity,
+		httpClient: http_client.New(),
+	}
+
+	c.create()
+
+	return &c
+}
+
+// Start
+// starting the cluster.
+func (c *cluster) Start(addr string) error {
 	app := gin.Default()
 
 	gin.SetMode(gin.ReleaseMode)
 	app.Use(c.handle)
 
-	c.create()
-
-	if err := app.Run(":8080"); err != nil {
-		panic(err)
+	if err := app.Run(addr); err != nil {
+		return err
 	}
+
+	return nil
 }

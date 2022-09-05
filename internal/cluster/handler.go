@@ -8,12 +8,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (c *Cluster) handle(ctx *gin.Context) {
+const (
+	serviceType = "http"
+)
+
+// handle
+// is the load balancing main request and response handler.
+func (c *cluster) handle(ctx *gin.Context) {
 	req := ctx.Request
-	address := "http://" + c.getIP() + req.URL.Path
+	address := serviceType + "://" + c.getIP() + req.URL.Path
 
 	if req.Method == http.MethodGet {
-		resp, err := c.HttpClient.Get(address)
+		resp, err := c.httpClient.Get(address)
 		if err != nil {
 			_ = ctx.Error(err)
 
@@ -26,14 +32,16 @@ func (c *Cluster) handle(ctx *gin.Context) {
 
 		ctx.JSON(resp.StatusCode, responseBody)
 	} else if req.Method == http.MethodPost {
-		_, err := c.HttpClient.Post(address, req.Body, req.Header.Get("content-type"))
+		contentTypeHeader := "content-type:" + req.Header.Get("content-type")
+
+		_, err := c.httpClient.Post(address, req.Body, contentTypeHeader)
 		if err != nil {
 			_ = ctx.Error(err)
 
 			return
 		}
 	} else if req.Method == http.MethodDelete {
-		_, err := c.HttpClient.Delete(address)
+		_, err := c.httpClient.Delete(address)
 		if err != nil {
 			_ = ctx.Error(err)
 
