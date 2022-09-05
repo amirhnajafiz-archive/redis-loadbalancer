@@ -54,6 +54,8 @@ func (c *Cluster) getIP() string {
 func (c *Cluster) Register() {
 	app := gin.Default()
 
+	gin.SetMode(gin.ReleaseMode)
+
 	app.Use(c.handle)
 
 	c.create()

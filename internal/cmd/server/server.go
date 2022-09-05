@@ -9,6 +9,8 @@ import (
 func New(address string) {
 	app := gin.Default()
 
+	gin.SetMode(gin.ReleaseMode)
+
 	h := handler.Handler{
 		Store: store.Store{
 			Conn: store.Connect("localhost:6379"),
