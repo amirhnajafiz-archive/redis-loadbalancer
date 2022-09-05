@@ -15,12 +15,23 @@ Clone the repository and start the balancing server:
 go run main.go
 ```
 
-Now you can get a URL for redis connection by:
+This will allow you to send the following http requests:
+#### Add a new item named ```mine``` and its value is ```yours```
 ```shell
-curl lcoalhost:8080/
+curl -X POST -d '{"key": "mine", "value": "yours"}' localhost:8080/api/data 
 ```
 
-Each time you request for a cluster, you will get a new IP.
+#### Get an item named ```mine```
+```shell
+curl localhost:8080/api/data/mine 
+```
+
+#### Remove an item named ```mine```
+```shell
+curl -X DELETE localhost:8080/api/data/mine 
+```
+
+Each time you make a request, you are using a different server.
 
 ## Test
 You can set a redis cluster with docker compose:
