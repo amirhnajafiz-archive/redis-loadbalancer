@@ -5,9 +5,9 @@ import (
 )
 
 func Execute() {
-	c := cluster.New(3)
+	c := cluster.New(3, 8080)
 
-	if err := c.Start(":8080"); err != nil {
+	if err := c.Start(); err != nil {
 		panic(err)
 	}
 }
