@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">
-Distributed Redis
+Redis LoadBalancer
 </h1>
 
 Creating a **distributed Redis client** with **Golang** and **Strago**. The idea is to create a clustering system for Redis clients, maybe a like a load balancer.
